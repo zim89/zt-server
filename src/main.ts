@@ -1,10 +1,15 @@
-import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import { AppModule } from './app.module';
-import { setupSwagger } from './shared/config/swagger/swagger.config';
+import { NestFactory } from '@nestjs/core';
+import cookieParser from 'cookie-parser';
+
+import { AppModule } from '@/app.module';
+import { setupSwagger } from '@/shared/config/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Cookie parser
+  app.use(cookieParser());
 
   // Глобальная валидация
   app.useGlobalPipes(
@@ -18,7 +23,7 @@ async function bootstrap() {
   // Настройка Swagger
   setupSwagger(app);
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 4000);
 }
 
 void bootstrap();

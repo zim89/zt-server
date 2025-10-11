@@ -10,13 +10,11 @@ export class PrismaService
   extends PrismaClient
   implements OnModuleInit, OnModuleDestroy
 {
-  async onModuleInit() {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  async onModuleInit(): Promise<void> {
     await this.$connect();
   }
 
-  async onModuleDestroy() {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  async onModuleDestroy(): Promise<void> {
     await this.$disconnect();
   }
 }

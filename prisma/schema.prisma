@@ -57,7 +57,7 @@ model User {
   lastName    String
   avatar      String?
   phone       String?
-  role        UserRole @default(OWNER)
+  roles       UserRole[] @default([OWNER])
   status      UserStatus @default(PENDING)
   
   // Метаданные
@@ -71,6 +71,7 @@ model User {
   memberships  Membership[]
   assignments  Task[] @relation("Assignee")
   markers      Marker[]
+  sessions     Session[]
   
   @@map("users")
 }
@@ -101,7 +102,7 @@ model Membership {
   id         String @id @default(cuid())
   projectId  String
   userId     String
-  role       ProjectRole @default(MEMBER)
+  roles      ProjectRole[] @default([MEMBER])
   joinedAt   DateTime @default(now())
   
   // Связи
@@ -202,4 +203,21 @@ model TaskMarker {
   
   @@unique([taskId, markerId])
   @@map("task_markers")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  refreshToken String
+  expiresAt    DateTime
+  clientIp     String?
+  userAgent    String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Связи
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("sessions")
 }
