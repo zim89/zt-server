@@ -13,6 +13,10 @@ export type SortOrder = (typeof sortOrders)[keyof typeof sortOrders];
  */
 export const sortFields = {
   createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  name: 'name',
+  dueDate: 'dueDate',
+  status: 'status',
 } as const;
 
 export type SortField = (typeof sortFields)[keyof typeof sortFields];
