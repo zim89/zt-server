@@ -1,18 +1,20 @@
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
+import { apiTagsMetadata } from '@/shared/constants';
+
 export const setupSwagger = (app: INestApplication) => {
-  const config = new DocumentBuilder()
+  const configBuilder = new DocumentBuilder()
     .setTitle('Zen Task API')
     .setDescription('API для управления задачами и проектами')
-    .setVersion('1.0')
-    .addTag('auth', 'Аутентификация и авторизация')
-    .addTag('users', 'Управление пользователями')
-    .addTag('projects', 'Управление проектами')
-    .addTag('tasks', 'Управление задачами')
-    .addTag('categories', 'Управление категориями')
-    .addTag('markers', 'Управление маркерами')
-    .addTag('contacts', 'Управление контактами')
+    .setVersion('1.0');
+
+  // Add all API tags from metadata
+  apiTagsMetadata.forEach((tag) => {
+    configBuilder.addTag(tag.name, tag.description);
+  });
+
+  const config = configBuilder
     .addBearerAuth(
       {
         type: 'http',

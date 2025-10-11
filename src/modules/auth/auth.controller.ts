@@ -11,13 +11,15 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 
+import { apiTags, controllerPaths } from '@/shared/constants';
+
 import { AuthService } from './auth.service';
 import { Auth, CurrentUser, AuthSwaggerDocs } from './decorators';
 import { RegisterDto, LoginDto, AuthResponseDto } from './dto';
 import type { AuthenticatedUser } from './types';
 
-@ApiTags('auth')
-@Controller('auth')
+@ApiTags(apiTags.auth)
+@Controller(controllerPaths.auth)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
