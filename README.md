@@ -23,38 +23,79 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+**Zen Task API** - A modern task management REST API built with NestJS, Bun, PostgreSQL, and Prisma ORM.
+
+### Features
+
+- ✅ **Authentication & Authorization** - JWT with access/refresh tokens, role-based access
+- ✅ **Project Management** - Projects with membership and role-based permissions
+- ✅ **Task Management** - Full CRUD with statuses, assignments, and markers
+- 🔜 **Categories** - Task categorization (coming soon)
+- 🔜 **Contacts** - Contact management (coming soon)
+- 🔜 **Markers** - Task labels/tags (coming soon)
+
+### Tech Stack
+
+- **Runtime**: Bun (faster than Node.js)
+- **Framework**: NestJS + TypeScript
+- **Database**: PostgreSQL + Prisma ORM
+- **Auth**: JWT (access + refresh tokens, HTTP-only cookies)
+- **Validation**: class-validator + class-transformer
+- **Documentation**: Swagger/OpenAPI at `/api/docs`
+- **Password Hashing**: Argon2id
+
+### Implemented Modules
+
+- ✅ **Auth Module** - User registration, login, profile, JWT authentication
+- ✅ **Project Module** - Project CRUD, membership management, role-based access
+- ✅ **Task Module** - Task CRUD, status management, assignments, markers (9 endpoints)
+
+For detailed documentation, see:
+
+- [AGENTS.md](AGENTS.md) - AI agent guidelines
+- [docs/module-implementation-plan.md](docs/module-implementation-plan.md) - Implementation roadmap
+- [docs/code-standards.md](docs/code-standards.md) - Coding standards
 
 ## Project setup
 
 ```bash
-$ npm install
+# Install dependencies
+$ bun install
+
+# Setup database
+$ bun run prisma:generate
+$ bun run prisma:migrate
 ```
 
 ## Compile and run the project
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
+# development with watch mode
+$ bun run start:dev
 
 # production mode
-$ npm run start:prod
+$ bun run build
+$ bun run start:prod
+
+# Open Prisma Studio (database GUI)
+$ bun run prisma:studio
 ```
+
+## API Documentation
+
+Swagger UI is available at: `http://localhost:4000/api/docs`
 
 ## Run tests
 
 ```bash
 # unit tests
-$ npm run test
+$ bun run test
 
 # e2e tests
-$ npm run test:e2e
+$ bun run test:e2e
 
 # test coverage
-$ npm run test:cov
+$ bun run test:cov
 ```
 
 ## Deployment
