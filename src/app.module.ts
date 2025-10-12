@@ -5,6 +5,7 @@ import { AuthModule } from '@/modules/auth';
 import { CategoryModule } from '@/modules/category';
 import { MarkerModule } from '@/modules/marker';
 import { ProjectModule } from '@/modules/project';
+import { StatisticModule } from '@/modules/statistic';
 import { TaskModule } from '@/modules/task';
 import { PrismaModule } from '@/prisma';
 
@@ -19,6 +20,7 @@ import { PrismaModule } from '@/prisma';
     TaskModule,
     CategoryModule,
     MarkerModule,
+    StatisticModule,
   ],
 })
 export class AppModule {}

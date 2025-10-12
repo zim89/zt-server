@@ -502,5 +502,5 @@ bun run prisma:generate
 
 ---
 
-**Author**: Zen Task Team  
+**Author**: zim89  
 **Last Updated**: 2025-01-10

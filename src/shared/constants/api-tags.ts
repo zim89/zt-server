@@ -9,6 +9,7 @@ export const apiTags = {
   categories: 'categories',
   contacts: 'contacts',
   markers: 'markers',
+  statistics: 'statistics',
 } as const;
 
 export type ApiTag = (typeof apiTags)[keyof typeof apiTags];
@@ -41,5 +42,9 @@ export const apiTagsMetadata = [
   {
     name: apiTags.markers,
     description: 'Task markers (labels/tags) management',
+  },
+  {
+    name: apiTags.statistics,
+    description: 'User statistics and analytics dashboard',
   },
 ] as const;
