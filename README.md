@@ -31,8 +31,8 @@
 - ✅ **Project Management** - Projects with membership and role-based permissions
 - ✅ **Task Management** - Full CRUD with statuses, assignments, and markers
 - ✅ **Categories** - Task categorization with auto-generated slugs
+- ✅ **Markers** - Task labels/tags with default and personal markers, custom colors
 - 🔜 **Contacts** - Contact management (coming soon)
-- 🔜 **Markers** - Task labels/tags (coming soon)
 
 ### Tech Stack
 
@@ -50,6 +50,7 @@
 - ✅ **Project Module** - Project CRUD, membership management, role-based access (9 endpoints)
 - ✅ **Task Module** - Task CRUD, status management, assignments, markers (9 endpoints)
 - ✅ **Category Module** - Category CRUD, slug generation, project-based access (6 endpoints)
+- ✅ **Marker Module** - Marker CRUD, default/personal markers, custom colors (6 endpoints)
 
 For detailed documentation, see:
 

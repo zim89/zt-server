@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 
 import { AuthModule } from '@/modules/auth';
 import { CategoryModule } from '@/modules/category';
+import { MarkerModule } from '@/modules/marker';
 import { ProjectModule } from '@/modules/project';
 import { TaskModule } from '@/modules/task';
 import { PrismaModule } from '@/prisma';
@@ -17,6 +18,7 @@ import { PrismaModule } from '@/prisma';
     ProjectModule,
     TaskModule,
     CategoryModule,
+    MarkerModule,
   ],
 })
 export class AppModule {}
