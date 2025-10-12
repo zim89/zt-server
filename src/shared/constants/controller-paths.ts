@@ -9,6 +9,7 @@ export const controllerPaths = {
   categories: 'categories',
   contacts: 'contacts',
   markers: 'markers',
+  statistics: 'statistics',
 } as const;
 
 export type ControllerPath =
