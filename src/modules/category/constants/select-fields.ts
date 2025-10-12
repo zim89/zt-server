@@ -1,0 +1,17 @@
+/**
+ * Prisma select fields for Category queries
+ * Used to explicitly select only required fields
+ */
+
+/**
+ * Basic category fields (without relations)
+ */
+export const categorySelectFields = {
+  id: true,
+  slug: true,
+  name: true,
+  description: true,
+  projectId: true,
+  createdAt: true,
+  updatedAt: true,
+} as const;

@@ -30,7 +30,7 @@
 - ✅ **Authentication & Authorization** - JWT with access/refresh tokens, role-based access
 - ✅ **Project Management** - Projects with membership and role-based permissions
 - ✅ **Task Management** - Full CRUD with statuses, assignments, and markers
-- 🔜 **Categories** - Task categorization (coming soon)
+- ✅ **Categories** - Task categorization with auto-generated slugs
 - 🔜 **Contacts** - Contact management (coming soon)
 - 🔜 **Markers** - Task labels/tags (coming soon)
 
@@ -46,9 +46,10 @@
 
 ### Implemented Modules
 
-- ✅ **Auth Module** - User registration, login, profile, JWT authentication
-- ✅ **Project Module** - Project CRUD, membership management, role-based access
+- ✅ **Auth Module** - User registration, login, profile, JWT authentication (5 endpoints)
+- ✅ **Project Module** - Project CRUD, membership management, role-based access (9 endpoints)
 - ✅ **Task Module** - Task CRUD, status management, assignments, markers (9 endpoints)
+- ✅ **Category Module** - Category CRUD, slug generation, project-based access (6 endpoints)
 
 For detailed documentation, see:
 
