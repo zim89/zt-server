@@ -4,4 +4,5 @@ export const envKeys = {
   jwtRefreshExpires: 'JWT_REFRESH_EXPIRES',
   cookieDomain: 'COOKIE_DOMAIN',
   nodeEnv: 'NODE_ENV',
+  clientUrl: 'CLIENT_URL',
 } as const;
