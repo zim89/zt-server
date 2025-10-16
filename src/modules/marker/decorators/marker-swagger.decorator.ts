@@ -12,6 +12,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
+import { markerSwaggerSchemas } from '../constants';
 import { MarkerResponseDto } from '../dto';
 
 export const MarkerSwaggerDocs = {
@@ -93,8 +94,9 @@ export const MarkerSwaggerDocs = {
       ApiOkResponse({
         description: 'Markers retrieved successfully',
         schema: {
+          example: markerSwaggerSchemas.markersList.example,
           properties: {
-            total: { type: 'number', example: 10 },
+            total: { type: 'number' },
             items: {
               type: 'array',
               items: { $ref: '#/components/schemas/MarkerResponseDto' },
@@ -102,11 +104,11 @@ export const MarkerSwaggerDocs = {
             pagination: {
               type: 'object',
               properties: {
-                page: { type: 'number', example: 1 },
-                limit: { type: 'number', example: 20 },
-                pages: { type: 'number', example: 1 },
-                hasNext: { type: 'boolean', example: false },
-                hasPrev: { type: 'boolean', example: false },
+                page: { type: 'number' },
+                limit: { type: 'number' },
+                pages: { type: 'number' },
+                hasNext: { type: 'boolean' },
+                hasPrev: { type: 'boolean' },
               },
             },
           },

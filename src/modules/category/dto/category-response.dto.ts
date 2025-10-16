@@ -32,4 +32,15 @@ export class CategoryResponseDto {
     example: '2025-01-12T12:00:00Z',
   })
   updatedAt!: Date;
+
+  @ApiPropertyOptional({
+    description: 'Count of related entities',
+    type: 'object',
+    properties: {
+      tasks: { type: 'number', example: 8 },
+    },
+  })
+  _count?: {
+    tasks: number;
+  };
 }

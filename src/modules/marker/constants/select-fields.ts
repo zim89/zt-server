@@ -17,3 +17,15 @@ export const markerSelectFields = {
   createdAt: true,
   updatedAt: true,
 } as const;
+
+/**
+ * Marker select fields with task count
+ */
+export const markerSelectFieldsWithCount = {
+  ...markerSelectFields,
+  _count: {
+    select: {
+      tasks: true,
+    },
+  },
+} as const;

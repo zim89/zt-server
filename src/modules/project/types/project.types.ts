@@ -18,6 +18,17 @@ export interface ProjectResponse {
 }
 
 /**
+ * Project with counts
+ */
+export interface ProjectWithCounts extends ProjectResponse {
+  _count: {
+    members: number;
+    tasks: number;
+    categories: number;
+  };
+}
+
+/**
  * Project with membership information
  */
 export interface ProjectWithMembership extends ProjectResponse {
@@ -50,6 +61,20 @@ export const projectSelectFields = {
   userId: true,
   createdAt: true,
   updatedAt: true,
+} as const;
+
+/**
+ * Project select fields with counts
+ */
+export const projectSelectFieldsWithCounts = {
+  ...projectSelectFields,
+  _count: {
+    select: {
+      members: true,
+      tasks: true,
+      categories: true,
+    },
+  },
 } as const;
 
 /**

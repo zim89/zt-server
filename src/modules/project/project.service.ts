@@ -26,7 +26,9 @@ import {
   membershipSelectFields,
   type MembershipResponse,
   projectSelectFields,
+  projectSelectFieldsWithCounts,
   type ProjectResponse,
+  type ProjectWithCounts,
 } from './types';
 
 @Injectable()
@@ -39,7 +41,7 @@ export class ProjectService {
   async findMany(
     query: FindProjectsQueryDto,
     userId: string,
-  ): Promise<PaginatedResponse<ProjectResponse>> {
+  ): Promise<PaginatedResponse<ProjectWithCounts>> {
     const {
       page = 1,
       limit = 20,
@@ -92,7 +94,7 @@ export class ProjectService {
     const [items, total] = await Promise.all([
       this.prisma.project.findMany({
         where,
-        select: projectSelectFields,
+        select: projectSelectFieldsWithCounts,
         skip,
         take: limit,
         orderBy: { [sortBy]: sortOrder },
@@ -106,10 +108,10 @@ export class ProjectService {
   /**
    * Find one project by ID
    */
-  async findOneById(id: string, userId: string): Promise<ProjectResponse> {
+  async findOneById(id: string, userId: string): Promise<ProjectWithCounts> {
     const project = await this.prisma.project.findUnique({
       where: { id },
-      select: projectSelectFields,
+      select: projectSelectFieldsWithCounts,
     });
 
     if (!project) {

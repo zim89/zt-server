@@ -15,3 +15,15 @@ export const categorySelectFields = {
   createdAt: true,
   updatedAt: true,
 } as const;
+
+/**
+ * Category select fields with task count
+ */
+export const categorySelectFieldsWithCount = {
+  ...categorySelectFields,
+  _count: {
+    select: {
+      tasks: true,
+    },
+  },
+} as const;

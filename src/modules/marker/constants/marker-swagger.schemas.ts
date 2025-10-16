@@ -42,6 +42,9 @@ export const markerSwaggerSchemas = {
       userId: 'clx1a2b3c4d5e6f7g8h9i0j2',
       createdAt: '2025-01-12T12:00:00Z',
       updatedAt: '2025-01-12T12:00:00Z',
+      _count: {
+        tasks: 12,
+      },
     },
   },
   defaultMarker: {
@@ -56,6 +59,38 @@ export const markerSwaggerSchemas = {
       userId: null,
       createdAt: '2025-01-12T12:00:00Z',
       updatedAt: '2025-01-12T12:00:00Z',
+      _count: {
+        tasks: 5,
+      },
+    },
+  },
+  markersList: {
+    description: 'Paginated list of markers',
+    example: {
+      total: 10,
+      items: [
+        {
+          id: 'clx1a2b3c4d5e6f7g8h9i0j1',
+          slug: 'important',
+          name: 'Important',
+          fontColor: '#FFFFFF',
+          bgColor: '#EF4444',
+          isDefault: false,
+          userId: 'clx1a2b3c4d5e6f7g8h9i0j2',
+          createdAt: '2025-01-12T12:00:00Z',
+          updatedAt: '2025-01-12T12:00:00Z',
+          _count: {
+            tasks: 12,
+          },
+        },
+      ],
+      pagination: {
+        page: 1,
+        pages: 1,
+        limit: 20,
+        hasNext: false,
+        hasPrev: false,
+      },
     },
   },
 } as const;

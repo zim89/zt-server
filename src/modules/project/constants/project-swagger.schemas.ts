@@ -52,6 +52,11 @@ export const projectSwaggerSchemas = {
       userId: 'clx0987654321',
       createdAt: '2025-01-10T12:00:00.000Z',
       updatedAt: '2025-01-10T12:00:00.000Z',
+      _count: {
+        members: 3,
+        tasks: 15,
+        categories: 4,
+      },
     },
   },
   projectsList: {
@@ -69,6 +74,11 @@ export const projectSwaggerSchemas = {
           userId: 'clx0987654321',
           createdAt: '2025-01-10T12:00:00.000Z',
           updatedAt: '2025-01-10T12:00:00.000Z',
+          _count: {
+            members: 3,
+            tasks: 15,
+            categories: 4,
+          },
         },
       ],
       pagination: {

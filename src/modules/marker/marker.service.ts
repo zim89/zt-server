@@ -10,13 +10,17 @@ import { queryModes, sortFields, sortOrders } from '@/shared/constants';
 import type { PaginatedResponse } from '@/shared/types';
 import { buildPaginatedResponse, generateSlug } from '@/shared/utils';
 
-import { markerMessages, markerSelectFields } from './constants';
+import {
+  markerMessages,
+  markerSelectFields,
+  markerSelectFieldsWithCount,
+} from './constants';
 import type {
   CreateMarkerDto,
   FindMarkersQueryDto,
   UpdateMarkerDto,
 } from './dto';
-import type { MarkerResponse } from './types';
+import type { MarkerResponse, MarkerWithTaskCount } from './types';
 
 @Injectable()
 export class MarkerService {
@@ -29,7 +33,7 @@ export class MarkerService {
   async findMany(
     query: FindMarkersQueryDto,
     userId: string,
-  ): Promise<PaginatedResponse<MarkerResponse>> {
+  ): Promise<PaginatedResponse<MarkerWithTaskCount>> {
     const {
       page = 1,
       limit = 20,
@@ -58,7 +62,7 @@ export class MarkerService {
     const [items, total] = await Promise.all([
       this.prisma.marker.findMany({
         where,
-        select: markerSelectFields,
+        select: markerSelectFieldsWithCount,
         skip,
         take: limit,
         orderBy: { [sortBy]: sortOrder },
@@ -73,10 +77,10 @@ export class MarkerService {
    * Find marker by ID
    * Access: default markers (all) OR personal markers (owner only)
    */
-  async findOneById(id: string, userId: string): Promise<MarkerResponse> {
+  async findOneById(id: string, userId: string): Promise<MarkerWithTaskCount> {
     const marker = await this.prisma.marker.findUnique({
       where: { id },
-      select: markerSelectFields,
+      select: markerSelectFieldsWithCount,
     });
 
     if (!marker) {

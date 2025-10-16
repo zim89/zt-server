@@ -10,13 +10,17 @@ import { queryModes, sortFields, sortOrders } from '@/shared/constants';
 import type { PaginatedResponse } from '@/shared/types';
 import { buildPaginatedResponse, generateSlug } from '@/shared/utils';
 
-import { categoryMessages, categorySelectFields } from './constants';
+import {
+  categoryMessages,
+  categorySelectFields,
+  categorySelectFieldsWithCount,
+} from './constants';
 import type {
   CreateCategoryDto,
   FindCategoriesQueryDto,
   UpdateCategoryDto,
 } from './dto';
-import type { CategoryResponse } from './types';
+import type { CategoryResponse, CategoryWithTaskCount } from './types';
 
 @Injectable()
 export class CategoryService {
@@ -27,7 +31,7 @@ export class CategoryService {
    */
   async findMany(
     query: FindCategoriesQueryDto,
-  ): Promise<PaginatedResponse<CategoryResponse>> {
+  ): Promise<PaginatedResponse<CategoryWithTaskCount>> {
     const {
       page = 1,
       limit = 20,
@@ -52,7 +56,7 @@ export class CategoryService {
     const [items, total] = await Promise.all([
       this.prisma.category.findMany({
         where,
-        select: categorySelectFields,
+        select: categorySelectFieldsWithCount,
         skip,
         take: limit,
         orderBy: { [sortBy]: sortOrder },
@@ -66,11 +70,14 @@ export class CategoryService {
   /**
    * Find category by ID
    */
-  async findOneById(id: string, userId: string): Promise<CategoryResponse> {
+  async findOneById(
+    id: string,
+    userId: string,
+  ): Promise<CategoryWithTaskCount> {
     const category = await this.prisma.category.findUnique({
       where: { id },
       select: {
-        ...categorySelectFields,
+        ...categorySelectFieldsWithCount,
         project: {
           select: {
             userId: true,
