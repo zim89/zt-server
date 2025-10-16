@@ -1,7 +1,45 @@
 /**
- * Swagger response schemas for Projects endpoints
+ * Swagger schemas for Projects endpoints
  */
 export const projectSwaggerSchemas = {
+  // DTO field schemas
+  name: {
+    description: 'Project name',
+    example: 'My Awesome Project',
+    minLength: 1,
+    maxLength: 100,
+  },
+  description: {
+    description: 'Project description (optional)',
+    example: 'A project for managing awesome tasks',
+    maxLength: 500,
+  },
+  slug: {
+    description:
+      'Unique URL-friendly identifier (auto-generated from name if not provided)',
+    example: 'my-awesome-project',
+    minLength: 3,
+    maxLength: 150,
+  },
+  isFavorite: {
+    description: 'Whether the project is marked as favorite',
+    example: false,
+  },
+  isHidden: {
+    description: 'Whether the project is hidden',
+    example: false,
+  },
+  userId: {
+    description: 'User ID to add as a member',
+    example: 'clx0987654321',
+  },
+  roles: {
+    description: 'User roles in the project',
+    example: ['MEMBER'],
+    enum: ['OWNER', 'ADMIN', 'MEMBER'],
+  },
+
+  // Response schemas
   project: {
     example: {
       id: 'clx1234567890',

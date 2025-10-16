@@ -17,7 +17,7 @@ import type { AuthenticatedUser } from '@/modules/auth/types';
 import { apiTags, controllerPaths, routeParams } from '@/shared/constants';
 
 import { TaskSwaggerDocs } from './decorators';
-import type {
+import {
   AssignTaskDto,
   CreateTaskDto,
   FindTasksQueryDto,

@@ -12,7 +12,7 @@ export const taskSwaggerSchemas = {
   description: {
     description: 'Detailed task description (optional)',
     example: 'Add JWT authentication with access and refresh tokens',
-    maxLength: 2000,
+    maxLength: 500,
   },
   status: {
     description: 'Current task status',
