@@ -63,4 +63,20 @@ export const categorySwaggerSchemas = {
       },
     },
   },
+  categoryNamesList: {
+    example: [
+      {
+        id: 'clx1a2b3c4d5e6f7g8h9i0j1',
+        name: 'Development',
+        slug: 'development',
+        incompleteTasksCount: 5,
+      },
+      {
+        id: 'clx1a2b3c4d5e6f7g8h9i0j2',
+        name: 'Testing',
+        slug: 'testing',
+        incompleteTasksCount: 3,
+      },
+    ],
+  },
 } as const;

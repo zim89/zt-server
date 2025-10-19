@@ -93,4 +93,24 @@ export const markerSwaggerSchemas = {
       },
     },
   },
+  markerNamesList: {
+    example: [
+      {
+        id: 'clx1a2b3c4d5e6f7g8h9i0j1',
+        name: 'Important',
+        slug: 'important',
+        isDefault: false,
+        fontColor: '#FFFFFF',
+        bgColor: '#EF4444',
+      },
+      {
+        id: 'clx1111111111',
+        name: 'Urgent',
+        slug: 'urgent',
+        isDefault: true,
+        fontColor: '#FFFFFF',
+        bgColor: '#DC2626',
+      },
+    ],
+  },
 } as const;

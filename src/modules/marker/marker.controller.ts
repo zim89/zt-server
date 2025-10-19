@@ -20,6 +20,7 @@ import { MarkerSwaggerDocs } from './decorators';
 import {
   CreateMarkerDto,
   FindMarkersQueryDto,
+  FindMarkerNamesQueryDto,
   MarkerResponseDto,
   UpdateMarkerDto,
 } from './dto';
@@ -47,6 +48,15 @@ export class MarkerController {
     @CurrentUser() user: AuthenticatedUser,
   ) {
     return this.markerService.findMany(query, user.id);
+  }
+
+  @Get('names')
+  @MarkerSwaggerDocs.findNames()
+  async findNames(
+    @Query() query: FindMarkerNamesQueryDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.markerService.findNames(query, user.id);
   }
 
   @Get(`:${routeParams.id}`)

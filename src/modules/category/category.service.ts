@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { TaskStatus, type Prisma } from '@prisma/client';
 
 import { PrismaService } from '@/prisma';
 import { queryModes, sortFields, sortOrders } from '@/shared/constants';
@@ -18,9 +19,14 @@ import {
 import type {
   CreateCategoryDto,
   FindCategoriesQueryDto,
+  FindCategoryNamesQueryDto,
   UpdateCategoryDto,
 } from './dto';
-import type { CategoryResponse, CategoryWithTaskCount } from './types';
+import type {
+  CategoryNameResponse,
+  CategoryResponse,
+  CategoryWithTaskCount,
+} from './types';
 
 @Injectable()
 export class CategoryService {
@@ -65,6 +71,82 @@ export class CategoryService {
     ]);
 
     return buildPaginatedResponse(items, total, page, limit);
+  }
+
+  /**
+   * Find category names for sidebar (minimal data with incomplete tasks count)
+   */
+  async findNames(
+    query: FindCategoryNamesQueryDto,
+    userId: string,
+  ): Promise<CategoryNameResponse[]> {
+    const { search, sortBy = 'name', sortOrder = 'asc' } = query;
+
+    // Build where clause - only categories from user's projects
+    const where: Prisma.CategoryWhereInput = {
+      project: {
+        OR: [
+          { userId }, // Projects owned by user
+          {
+            members: {
+              some: { userId }, // Projects where user is a member
+            },
+          },
+        ],
+      },
+    };
+
+    // Note: Category model doesn't have isActive field, so we skip this filter
+
+    // Apply search
+    if (search) {
+      where.AND = [
+        where,
+        {
+          OR: [
+            { name: { contains: search, mode: queryModes.insensitive } },
+            { slug: { contains: search, mode: queryModes.insensitive } },
+          ],
+        },
+      ];
+    }
+
+    // Execute query with incomplete tasks count
+    const categories: Array<{
+      id: string;
+      name: string;
+      slug: string;
+      _count: {
+        tasks: number;
+      };
+    }> = await this.prisma.category.findMany({
+      where,
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        _count: {
+          select: {
+            tasks: {
+              where: {
+                status: {
+                  not: TaskStatus.COMPLETED,
+                },
+              },
+            },
+          },
+        },
+      },
+      orderBy: { [sortBy]: sortOrder },
+    });
+
+    // Transform to CategoryNameResponse
+    return categories.map((category) => ({
+      id: category.id,
+      name: category.name,
+      slug: category.slug,
+      incompleteTasksCount: category._count.tasks,
+    }));
   }
 
   /**

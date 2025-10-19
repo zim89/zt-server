@@ -25,3 +25,15 @@ export interface MarkerWithUser extends MarkerResponse {
     lastName: string;
   } | null;
 }
+
+/**
+ * Marker name response for sidebar (minimal data without task count)
+ */
+export interface MarkerNameResponse {
+  id: string;
+  name: string;
+  slug: string;
+  isDefault: boolean;
+  fontColor: string | null;
+  bgColor: string | null;
+}

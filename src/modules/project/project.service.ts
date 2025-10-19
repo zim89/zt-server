@@ -5,7 +5,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import type { Prisma } from '@prisma/client';
+import { TaskStatus, type Prisma } from '@prisma/client';
 
 import { PrismaService } from '@/prisma';
 import { queryModes, sortFields, sortOrders } from '@/shared/constants';
@@ -16,6 +16,7 @@ import { projectMessages } from './constants';
 import type {
   AddMemberDto,
   CreateProjectDto,
+  FindProjectNamesQueryDto,
   FindProjectsQueryDto,
   UpdateMemberRoleDto,
   UpdateProjectDto,
@@ -27,6 +28,7 @@ import {
   type MembershipResponse,
   projectSelectFields,
   projectSelectFieldsWithCounts,
+  type ProjectNameResponse,
   type ProjectResponse,
   type ProjectWithCounts,
 } from './types';
@@ -103,6 +105,99 @@ export class ProjectService {
     ]);
 
     return buildPaginatedResponse(items, total, page, limit);
+  }
+
+  /**
+   * Find project names for sidebar (minimal data with incomplete tasks count)
+   */
+  async findNames(
+    query: FindProjectNamesQueryDto,
+    userId: string,
+  ): Promise<ProjectNameResponse[]> {
+    const {
+      search,
+      isFavorite,
+      isActive,
+      isHidden,
+      sortBy = 'name',
+      sortOrder = 'asc',
+    } = query;
+
+    // Build where clause
+    const where: Prisma.ProjectWhereInput = {
+      OR: [
+        { userId }, // Projects owned by user
+        {
+          members: {
+            some: { userId }, // Projects where user is a member
+          },
+        },
+      ],
+    };
+
+    // Apply filters
+    if (isFavorite !== undefined) {
+      where.isFavorite = isFavorite;
+    }
+
+    if (isActive !== undefined) {
+      where.isActive = isActive;
+    }
+
+    if (isHidden !== undefined) {
+      where.isHidden = isHidden;
+    }
+
+    // Apply search
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: queryModes.insensitive } },
+        { slug: { contains: search, mode: queryModes.insensitive } },
+      ];
+    }
+
+    // Execute query with incomplete tasks count
+    const projects: Array<{
+      id: string;
+      name: string;
+      slug: string;
+      isFavorite: boolean;
+      isHidden: boolean;
+      _count: {
+        tasks: number;
+      };
+    }> = await this.prisma.project.findMany({
+      where,
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        isFavorite: true,
+        isHidden: true,
+        _count: {
+          select: {
+            tasks: {
+              where: {
+                status: {
+                  not: TaskStatus.COMPLETED,
+                },
+              },
+            },
+          },
+        },
+      },
+      orderBy: { [sortBy]: sortOrder },
+    });
+
+    // Transform to ProjectNameResponse
+    return projects.map((project) => ({
+      id: project.id,
+      name: project.name,
+      slug: project.slug,
+      isFavorite: project.isFavorite,
+      isHidden: project.isHidden,
+      incompleteTasksCount: project._count.tasks,
+    }));
   }
 
   /**

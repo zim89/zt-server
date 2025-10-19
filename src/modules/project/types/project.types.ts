@@ -29,6 +29,18 @@ export interface ProjectWithCounts extends ProjectResponse {
 }
 
 /**
+ * Project name response for sidebar (minimal data)
+ */
+export interface ProjectNameResponse {
+  id: string;
+  name: string;
+  slug: string;
+  isFavorite: boolean;
+  isHidden: boolean;
+  incompleteTasksCount: number;
+}
+
+/**
  * Project with membership information
  */
 export interface ProjectWithMembership extends ProjectResponse {

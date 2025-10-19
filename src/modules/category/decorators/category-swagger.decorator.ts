@@ -107,6 +107,37 @@ export const CategorySwaggerDocs = {
       ApiUnauthorizedResponse({ description: 'Authentication required' }),
     ),
 
+  findNames: () =>
+    applyDecorators(
+      ApiOperation({
+        summary: 'Get category names for sidebar',
+        description:
+          'Returns minimal category data with incomplete tasks count for sidebar display',
+      }),
+      ApiQuery({
+        name: 'search',
+        required: false,
+        type: String,
+        description: 'Search in category name or slug',
+      }),
+      ApiQuery({
+        name: 'sortBy',
+        required: false,
+        type: String,
+        example: 'name',
+      }),
+      ApiQuery({
+        name: 'sortOrder',
+        required: false,
+        enum: ['asc', 'desc'],
+        example: 'asc',
+      }),
+      ApiOkResponse({
+        description: 'Category names retrieved successfully',
+        schema: { example: categorySwaggerSchemas.categoryNamesList.example },
+      }),
+    ),
+
   findOneById: () =>
     applyDecorators(
       ApiOperation({ summary: 'Get category by ID' }),

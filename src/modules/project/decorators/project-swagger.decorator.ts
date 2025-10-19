@@ -71,6 +71,40 @@ export const ProjectSwaggerDocs = {
       }),
     ),
 
+  findNames: () =>
+    applyDecorators(
+      ApiOperation({
+        summary: 'Get project names for sidebar',
+        description:
+          'Returns minimal project data with incomplete tasks count for sidebar display',
+      }),
+      ApiQuery({
+        name: 'search',
+        required: false,
+        type: String,
+        description: 'Search in project name or slug',
+      }),
+      ApiQuery({
+        name: 'sortBy',
+        required: false,
+        type: String,
+        example: 'name',
+      }),
+      ApiQuery({
+        name: 'sortOrder',
+        required: false,
+        enum: ['asc', 'desc'],
+        example: 'asc',
+      }),
+      ApiQuery({ name: 'isFavorite', required: false, type: Boolean }),
+      ApiQuery({ name: 'isActive', required: false, type: Boolean }),
+      ApiQuery({ name: 'isHidden', required: false, type: Boolean }),
+      ApiOkResponse({
+        description: 'Project names retrieved successfully',
+        schema: { example: projectSwaggerSchemas.projectNamesList.example },
+      }),
+    ),
+
   findOneById: () =>
     applyDecorators(
       ApiOperation({

@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import type { Prisma } from '@prisma/client';
 
 import { PrismaService } from '@/prisma';
 import { queryModes, sortFields, sortOrders } from '@/shared/constants';
@@ -18,9 +19,14 @@ import {
 import type {
   CreateMarkerDto,
   FindMarkersQueryDto,
+  FindMarkerNamesQueryDto,
   UpdateMarkerDto,
 } from './dto';
-import type { MarkerResponse, MarkerWithTaskCount } from './types';
+import type {
+  MarkerNameResponse,
+  MarkerResponse,
+  MarkerWithTaskCount,
+} from './types';
 
 @Injectable()
 export class MarkerService {
@@ -71,6 +77,73 @@ export class MarkerService {
     ]);
 
     return buildPaginatedResponse(items, total, page, limit);
+  }
+
+  /**
+   * Find marker names for sidebar (minimal data without task count)
+   */
+  async findNames(
+    query: FindMarkerNamesQueryDto,
+    userId: string,
+  ): Promise<MarkerNameResponse[]> {
+    const { search, isDefault, sortBy = 'name', sortOrder = 'asc' } = query;
+
+    // Build where clause: default markers OR personal markers of current user
+    const where: Prisma.MarkerWhereInput = {
+      OR: [
+        { isDefault: true }, // Default markers (accessible to all)
+        { userId }, // Personal markers of current user
+      ],
+    };
+
+    // Apply filters
+    if (isDefault !== undefined) {
+      where.isDefault = isDefault;
+    }
+
+    // Apply search
+    if (search) {
+      where.AND = [
+        where,
+        {
+          OR: [
+            { name: { contains: search, mode: queryModes.insensitive } },
+            { slug: { contains: search, mode: queryModes.insensitive } },
+          ],
+        },
+      ];
+    }
+
+    // Execute query without task count
+    const markers: Array<{
+      id: string;
+      name: string;
+      slug: string;
+      isDefault: boolean;
+      fontColor: string | null;
+      bgColor: string | null;
+    }> = await this.prisma.marker.findMany({
+      where,
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        isDefault: true,
+        fontColor: true,
+        bgColor: true,
+      },
+      orderBy: { [sortBy]: sortOrder },
+    });
+
+    // Transform to MarkerNameResponse
+    return markers.map((marker) => ({
+      id: marker.id,
+      name: marker.name,
+      slug: marker.slug,
+      isDefault: marker.isDefault,
+      fontColor: marker.fontColor,
+      bgColor: marker.bgColor,
+    }));
   }
 
   /**

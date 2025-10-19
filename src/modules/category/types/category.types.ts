@@ -24,3 +24,13 @@ export interface CategoryWithTaskCount extends CategoryResponse {
     tasks: number;
   };
 }
+
+/**
+ * Category name response for sidebar (minimal data with incomplete tasks count)
+ */
+export interface CategoryNameResponse {
+  id: string;
+  name: string;
+  slug: string;
+  incompleteTasksCount: number;
+}

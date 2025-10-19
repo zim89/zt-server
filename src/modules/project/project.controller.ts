@@ -20,6 +20,7 @@ import { ProjectSwaggerDocs } from './decorators';
 import {
   AddMemberDto,
   CreateProjectDto,
+  FindProjectNamesQueryDto,
   FindProjectsQueryDto,
   UpdateMemberRoleDto,
   UpdateProjectDto,
@@ -40,6 +41,16 @@ export class ProjectController {
     @CurrentUser() user: AuthenticatedUser,
   ) {
     return await this.projectService.findMany(query, user.id);
+  }
+
+  @ProjectSwaggerDocs.findNames()
+  @Get('names')
+  @Auth()
+  async findNames(
+    @Query() query: FindProjectNamesQueryDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return await this.projectService.findNames(query, user.id);
   }
 
   @ProjectSwaggerDocs.findOneById()

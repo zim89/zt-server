@@ -117,6 +117,38 @@ export const MarkerSwaggerDocs = {
       ApiUnauthorizedResponse({ description: 'Authentication required' }),
     ),
 
+  findNames: () =>
+    applyDecorators(
+      ApiOperation({
+        summary: 'Get marker names for sidebar',
+        description:
+          'Returns minimal marker data without task count for sidebar display',
+      }),
+      ApiQuery({
+        name: 'search',
+        required: false,
+        type: String,
+        description: 'Search in marker name or slug',
+      }),
+      ApiQuery({
+        name: 'sortBy',
+        required: false,
+        type: String,
+        example: 'name',
+      }),
+      ApiQuery({
+        name: 'sortOrder',
+        required: false,
+        enum: ['asc', 'desc'],
+        example: 'asc',
+      }),
+      ApiQuery({ name: 'isDefault', required: false, type: Boolean }),
+      ApiOkResponse({
+        description: 'Marker names retrieved successfully',
+        schema: { example: markerSwaggerSchemas.markerNamesList.example },
+      }),
+    ),
+
   findOneById: () =>
     applyDecorators(
       ApiOperation({ summary: 'Get marker by ID' }),

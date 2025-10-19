@@ -90,6 +90,26 @@ export const projectSwaggerSchemas = {
       },
     },
   },
+  projectNamesList: {
+    example: [
+      {
+        id: 'clx1234567890',
+        name: 'My Awesome Project',
+        slug: 'my-awesome-project',
+        isFavorite: false,
+        isHidden: false,
+        incompleteTasksCount: 5,
+      },
+      {
+        id: 'clx2345678901',
+        name: 'Another Project',
+        slug: 'another-project',
+        isFavorite: true,
+        isHidden: false,
+        incompleteTasksCount: 12,
+      },
+    ],
+  },
   membership: {
     example: {
       id: 'clx1111111111',

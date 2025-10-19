@@ -22,6 +22,7 @@ import {
   CategoryResponseDto,
   CreateCategoryDto,
   FindCategoriesQueryDto,
+  FindCategoryNamesQueryDto,
   UpdateCategoryDto,
 } from './dto';
 
@@ -44,6 +45,15 @@ export class CategoryController {
   @CategorySwaggerDocs.findMany()
   async findMany(@Query() query: FindCategoriesQueryDto) {
     return this.categoryService.findMany(query);
+  }
+
+  @Get('names')
+  @CategorySwaggerDocs.findNames()
+  async findNames(
+    @Query() query: FindCategoryNamesQueryDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.categoryService.findNames(query, user.id);
   }
 
   @Get(`:${routeParams.id}`)
