@@ -1,6 +1,5 @@
 import {
   ConflictException,
-  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -37,6 +36,7 @@ export class CategoryService {
    */
   async findMany(
     query: FindCategoriesQueryDto,
+    userId: string,
   ): Promise<PaginatedResponse<CategoryWithTaskCount>> {
     const {
       page = 1,
@@ -44,19 +44,18 @@ export class CategoryService {
       search,
       sortBy = sortFields.createdAt,
       sortOrder = sortOrders.desc,
-      projectId,
     } = query;
 
     const skip = (page - 1) * limit;
 
-    const where = {
+    const where: Prisma.CategoryWhereInput = {
+      userId, // Only user's categories
       ...(search && {
         OR: [
           { name: { contains: search, mode: queryModes.insensitive } },
           { description: { contains: search, mode: queryModes.insensitive } },
         ],
       }),
-      ...(projectId && { projectId }),
     };
 
     const [items, total] = await Promise.all([
@@ -82,26 +81,13 @@ export class CategoryService {
   ): Promise<CategoryNameResponse[]> {
     const { search, sortBy = 'name', sortOrder = 'asc' } = query;
 
-    // Build where clause - only categories from user's projects
-    const where: Prisma.CategoryWhereInput = {
-      project: {
-        OR: [
-          { userId }, // Projects owned by user
-          {
-            members: {
-              some: { userId }, // Projects where user is a member
-            },
-          },
-        ],
-      },
-    };
-
-    // Note: Category model doesn't have isActive field, so we skip this filter
+    // Build where clause - only user's categories
+    const where: Prisma.CategoryWhereInput = { userId };
 
     // Apply search
     if (search) {
       where.AND = [
-        where,
+        { userId },
         {
           OR: [
             { name: { contains: search, mode: queryModes.insensitive } },
@@ -157,40 +143,15 @@ export class CategoryService {
     userId: string,
   ): Promise<CategoryWithTaskCount> {
     const category = await this.prisma.category.findUnique({
-      where: { id },
-      select: {
-        ...categorySelectFieldsWithCount,
-        project: {
-          select: {
-            userId: true,
-            members: {
-              where: { userId },
-              select: { userId: true },
-            },
-          },
-        },
-      },
+      where: { id, userId },
+      select: categorySelectFieldsWithCount,
     });
 
     if (!category) {
       throw new NotFoundException(categoryMessages.category.error.notFound);
     }
 
-    // Check access: owner or member of project
-    const isOwner = category.project.userId === userId;
-    const isMember = category.project.members.length > 0;
-
-    if (!isOwner && !isMember) {
-      throw new ForbiddenException(
-        categoryMessages.category.error.accessDenied,
-      );
-    }
-
-    // Remove nested project from response
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { project, ...categoryData } = category;
-
-    return categoryData;
+    return category;
   }
 
   /**
@@ -198,40 +159,15 @@ export class CategoryService {
    */
   async findOneBySlug(slug: string, userId: string): Promise<CategoryResponse> {
     const category = await this.prisma.category.findUnique({
-      where: { slug },
-      select: {
-        ...categorySelectFields,
-        project: {
-          select: {
-            userId: true,
-            members: {
-              where: { userId },
-              select: { userId: true },
-            },
-          },
-        },
-      },
+      where: { userId_slug: { userId, slug } },
+      select: categorySelectFields,
     });
 
     if (!category) {
       throw new NotFoundException(categoryMessages.category.error.notFound);
     }
 
-    // Check access: owner or member of project
-    const isOwner = category.project.userId === userId;
-    const isMember = category.project.members.length > 0;
-
-    if (!isOwner && !isMember) {
-      throw new ForbiddenException(
-        categoryMessages.category.error.accessDenied,
-      );
-    }
-
-    // Remove nested project from response
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { project, ...categoryData } = category;
-
-    return categoryData;
+    return category;
   }
 
   /**
@@ -241,36 +177,12 @@ export class CategoryService {
     userId: string,
     dto: CreateCategoryDto,
   ): Promise<CategoryResponse> {
-    // Verify user has access to project
-    const project = await this.prisma.project.findUnique({
-      where: { id: dto.projectId },
-      select: {
-        userId: true,
-        members: {
-          where: { userId },
-          select: { userId: true },
-        },
-      },
-    });
-
-    if (!project) {
-      throw new NotFoundException(categoryMessages.project.error.notFound);
-    }
-
-    // Check access: owner or member of project
-    const isOwner = project.userId === userId;
-    const isMember = project.members.length > 0;
-
-    if (!isOwner && !isMember) {
-      throw new ForbiddenException(categoryMessages.project.error.accessDenied);
-    }
-
     // Generate slug from name
     const slug = generateSlug(dto.name);
 
-    // Check if slug already exists
+    // Check if slug already exists for this user
     const existingCategory = await this.prisma.category.findUnique({
-      where: { slug },
+      where: { userId_slug: { userId, slug } },
     });
 
     if (existingCategory) {
@@ -283,7 +195,7 @@ export class CategoryService {
         name: dto.name,
         description: dto.description,
         slug,
-        projectId: dto.projectId,
+        userId,
       },
       select: categorySelectFields,
     });
@@ -297,45 +209,17 @@ export class CategoryService {
     userId: string,
     dto: UpdateCategoryDto,
   ): Promise<CategoryResponse> {
-    // Verify access
+    // Verify category exists
     const category = await this.findOneById(id, userId);
-
-    // Verify user is owner or admin of project
-    const project = await this.prisma.project.findUnique({
-      where: { id: category.projectId },
-      select: {
-        userId: true,
-        members: {
-          where: {
-            userId,
-            roles: { hasSome: ['OWNER', 'ADMIN'] },
-          },
-          select: { userId: true },
-        },
-      },
-    });
-
-    if (!project) {
-      throw new NotFoundException(categoryMessages.project.error.notFound);
-    }
-
-    const isOwner = project.userId === userId;
-    const isAdmin = project.members.length > 0;
-
-    if (!isOwner && !isAdmin) {
-      throw new ForbiddenException(
-        categoryMessages.category.error.accessDenied,
-      );
-    }
 
     // If name is being updated, regenerate slug
     let slug: string | undefined;
     if (dto.name && dto.name !== category.name) {
       slug = generateSlug(dto.name);
 
-      // Check if new slug already exists
+      // Check if new slug already exists for this user
       const existingCategory = await this.prisma.category.findUnique({
-        where: { slug },
+        where: { userId_slug: { userId, slug } },
       });
 
       if (existingCategory && existingCategory.id !== id) {
@@ -359,40 +243,12 @@ export class CategoryService {
    * Delete category
    */
   async delete(id: string, userId: string): Promise<void> {
-    // Verify access
-    const category = await this.findOneById(id, userId);
-
-    // Verify user is owner or admin of project
-    const project = await this.prisma.project.findUnique({
-      where: { id: category.projectId },
-      select: {
-        userId: true,
-        members: {
-          where: {
-            userId,
-            roles: { hasSome: ['OWNER', 'ADMIN'] },
-          },
-          select: { userId: true },
-        },
-      },
-    });
-
-    if (!project) {
-      throw new NotFoundException(categoryMessages.project.error.notFound);
-    }
-
-    const isOwner = project.userId === userId;
-    const isAdmin = project.members.length > 0;
-
-    if (!isOwner && !isAdmin) {
-      throw new ForbiddenException(
-        categoryMessages.category.error.accessDenied,
-      );
-    }
+    // Verify category exists and belongs to user
+    await this.findOneById(id, userId);
 
     // Delete category
     await this.prisma.category.delete({
-      where: { id },
+      where: { id, userId },
     });
   }
 }

@@ -17,10 +17,6 @@ export const categorySwaggerSchemas = {
     description: 'Unique URL-friendly identifier (auto-generated from name)',
     example: 'development',
   },
-  projectId: {
-    description: 'ID of the project this category belongs to',
-    example: 'clx1a2b3c4d5e6f7g8h9i0j1',
-  },
   category: {
     description: 'Complete category object',
     example: {
@@ -28,7 +24,6 @@ export const categorySwaggerSchemas = {
       slug: 'development',
       name: 'Development',
       description: 'Tasks related to software development and coding',
-      projectId: 'clx1a2b3c4d5e6f7g8h9i0j2',
       createdAt: '2025-01-12T12:00:00Z',
       updatedAt: '2025-01-12T12:00:00Z',
       _count: {
@@ -46,7 +41,6 @@ export const categorySwaggerSchemas = {
           slug: 'development',
           name: 'Development',
           description: 'Tasks related to software development and coding',
-          projectId: 'clx1a2b3c4d5e6f7g8h9i0j2',
           createdAt: '2025-01-12T12:00:00Z',
           updatedAt: '2025-01-12T12:00:00Z',
           _count: {

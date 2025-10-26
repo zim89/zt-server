@@ -47,149 +47,150 @@ enum TaskStatus {
 }
 
 model User {
-  id          String @id @default(cuid())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  email       String @unique
-  password    String 
-  firstName    String
-  lastName    String
-  avatar      String?
-  phone       String?
-  roles       UserRole[] @default([OWNER])
-  status      UserStatus @default(PENDING)
-  
+  email     String     @unique
+  password  String
+  firstName String
+  lastName  String
+  avatar    String?
+  phone     String?
+  roles     UserRole[] @default([OWNER])
+  status    UserStatus @default(PENDING)
+
   // Метаданные
-  emailVerified  Boolean @default(false)
+  emailVerified Boolean   @default(false)
   lastLoginAt   DateTime?
-  
+
   // Связи
-  projects     Project[]@relation("Owner")
-  tasks        Task[] @relation("Creator")
-  contacts     Contact[]
-  memberships  Membership[]
-  assignments  Task[] @relation("Assignee")
-  markers      Marker[]
-  sessions     Session[]
-  
+  projects    Project[]    @relation("Owner")
+  tasks       Task[]       @relation("Creator")
+  contacts    Contact[]
+  memberships Membership[]
+  assignments Task[]       @relation("Assignee")
+  markers     Marker[]
+  categories  Category[]
+  sessions    Session[]
+
   @@map("users")
 }
 
 model Project {
-  id           String @id @default(cuid())
-  slug         String @unique
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  name         String
-  description  String?
-  isActive     Boolean @default(true)
-  isFavorite   Boolean @default(false)
-  isHidden     Boolean @default(false)
-  
+  name        String
+  description String?
+  isActive    Boolean @default(true)
+  isFavorite  Boolean @default(false)
+  isHidden    Boolean @default(false)
+
   // Связи
-  user        User @relation("Owner", fields: [userId], references: [id], onDelete: Restrict)
-  userId      String
-  members     Membership[]
-  tasks       Task[]
-  categories  Category[]
-  
+  user    User         @relation("Owner", fields: [userId], references: [id], onDelete: Restrict)
+  userId  String
+  members Membership[]
+  tasks   Task[]
+
   @@map("projects")
 }
 
 model Membership {
-  id         String @id @default(cuid())
-  projectId  String
-  userId     String
-  roles      ProjectRole[] @default([MEMBER])
-  joinedAt   DateTime @default(now())
-  
+  id        String        @id @default(cuid())
+  projectId String
+  userId    String
+  roles     ProjectRole[] @default([MEMBER])
+  joinedAt  DateTime      @default(now())
+
   // Связи
-  user    User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  
+
   @@unique([projectId, userId])
   @@map("memberships")
 }
 
 model Task {
-  id           String @id @default(cuid())
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  name         String
-  description  String?
-  status       TaskStatus @default(NOT_STARTED)
-  note         String?
-  dueDate      DateTime?
-  
+  name        String
+  description String?
+  status      TaskStatus @default(NOT_STARTED)
+  note        String?
+  dueDate     DateTime?
+
   // Связи
-  contactId    String?
-  contact      Contact? @relation("TaskContact", fields: [contactId], references: [id])
-  projectId    String
-  project      Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  contactId  String?
+  contact    Contact?     @relation("TaskContact", fields: [contactId], references: [id])
+  projectId  String
+  project    Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
   categoryId String?
-  category   Category? @relation(fields: [categoryId], references: [id])
+  category   Category?    @relation(fields: [categoryId], references: [id])
   creatorId  String
-  creator    User @relation("Creator", fields: [creatorId], references: [id])
+  creator    User         @relation("Creator", fields: [creatorId], references: [id])
   assigneeId String?
-  assignee   User? @relation("Assignee", fields: [assigneeId], references: [id])
+  assignee   User?        @relation("Assignee", fields: [assigneeId], references: [id])
   markers    TaskMarker[]
-  
+
   @@map("tasks")
 }
 
 model Category {
-  id         String @id @default(cuid())
-  slug       String @unique
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        String   @id @default(cuid())
+  slug      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   name        String
   description String?
 
   // Связи
-  tasks     Task[]
-  projectId String
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks  Task[]
+
+  @@unique([userId, slug], name: "userId_slug") // уникальность slug в рамках пользователя
   @@map("categories")
 }
 
 model Contact {
-  id        String @id @default(cuid())
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
-  name      String
-  email     String?
-  phone     String?
-  
+
+  name  String
+  email String?
+  phone String?
+
   // Связи
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
   tasks  Task[] @relation("TaskContact")
-  
+
   @@map("contacts")
 }
 
 model Marker {
   id        String   @id @default(cuid())
   name      String
-  fontColor String?  // цвет шрифта
-  bgColor   String?  // цвет фона/выделения
-  slug      String   @unique
+  fontColor String? // цвет шрифта
+  bgColor   String? // цвет фона/выделения
+  slug      String
   isDefault Boolean  @default(false) // предустановленный
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   // Связи
-  userId    String?
-  user      User? @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tasks     TaskMarker[]
-  
-  @@unique([userId, slug]) // уникальность в рамках пользователя
+  userId String?
+  user   User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks  TaskMarker[]
+
+  @@unique([userId, slug], name: "userId_slug") // уникальность в рамках пользователя
   @@map("markers")
 }
 
@@ -197,10 +198,10 @@ model TaskMarker {
   id       String @id @default(cuid())
   taskId   String
   markerId String
-  
+
   task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
   marker Marker @relation(fields: [markerId], references: [id], onDelete: Cascade)
-  
+
   @@unique([taskId, markerId])
   @@map("task_markers")
 }
@@ -214,10 +215,10 @@ model Session {
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  
+
   // Связи
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@map("sessions")
 }

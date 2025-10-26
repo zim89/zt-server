@@ -43,8 +43,11 @@ export class CategoryController {
 
   @Get()
   @CategorySwaggerDocs.findMany()
-  async findMany(@Query() query: FindCategoriesQueryDto) {
-    return this.categoryService.findMany(query);
+  async findMany(
+    @Query() query: FindCategoriesQueryDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.categoryService.findMany(query, user.id);
   }
 
   @Get('names')

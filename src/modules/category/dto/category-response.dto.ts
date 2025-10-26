@@ -18,8 +18,11 @@ export class CategoryResponseDto {
   @ApiPropertyOptional(categorySwaggerSchemas.description)
   description?: string | null;
 
-  @ApiProperty(categorySwaggerSchemas.projectId)
-  projectId!: string;
+  @ApiProperty({
+    description: 'User ID who owns this category',
+    example: 'clx1a2b3c4d5e6f7g8h9i0j1',
+  })
+  userId!: string;
 
   @ApiProperty({
     description: 'Creation date',

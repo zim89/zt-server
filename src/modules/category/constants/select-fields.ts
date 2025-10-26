@@ -11,7 +11,7 @@ export const categorySelectFields = {
   slug: true,
   name: true,
   description: true,
-  projectId: true,
+  userId: true,
   createdAt: true,
   updatedAt: true,
 } as const;
