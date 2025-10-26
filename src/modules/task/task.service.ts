@@ -57,11 +57,21 @@ export class TaskService {
       },
     };
 
-    // Apply filters
-    if (query.projectId) {
-      where.projectId = query.projectId;
+    // Resolve project slug to ID if provided
+    if (query.projectSlug) {
+      const project = await this.prisma.project.findUnique({
+        where: { slug: query.projectSlug },
+        select: { id: true },
+      });
+
+      if (!project) {
+        throw new NotFoundException(taskMessages.task.error.projectNotFound);
+      }
+
+      where.projectId = project.id;
     }
 
+    // Apply filters
     if (query.status) {
       where.status = query.status;
     }
@@ -70,8 +80,21 @@ export class TaskService {
       where.assigneeId = query.assigneeId;
     }
 
-    if (query.categoryId) {
-      where.categoryId = query.categoryId;
+    // Resolve category slug to ID if provided
+    if (query.categorySlug) {
+      const category = await this.prisma.category.findFirst({
+        where: {
+          slug: query.categorySlug,
+          userId, // Category must belong to the user
+        },
+        select: { id: true },
+      });
+
+      if (!category) {
+        throw new NotFoundException(taskMessages.task.error.categoryNotFound);
+      }
+
+      where.categoryId = category.id;
     }
 
     if (query.contactId) {
@@ -145,7 +168,9 @@ export class TaskService {
     }
 
     // Check access through project
-    await this.checkTaskAccess(task.projectId, userId);
+    if (task.projectId) {
+      await this.checkTaskAccess(task.projectId, userId);
+    }
 
     return task;
   }
@@ -154,8 +179,20 @@ export class TaskService {
    * Create a new task
    */
   async create(dto: CreateTaskDto, userId: string): Promise<TaskResponse> {
-    // Check if user has access to the project
-    await this.checkTaskAccess(dto.projectId, userId);
+    // Check if user has access to the project (only if projectId is provided)
+    if (dto.projectId) {
+      await this.checkTaskAccess(dto.projectId, userId);
+    }
+
+    // Verify project exists if provided
+    if (dto.projectId) {
+      const project = await this.prisma.project.findUnique({
+        where: { id: dto.projectId },
+      });
+      if (!project) {
+        throw new NotFoundException(taskMessages.task.error.projectNotFound);
+      }
+    }
 
     // Verify category exists if provided
     if (dto.categoryId) {
@@ -178,7 +215,7 @@ export class TaskService {
     }
 
     // Verify assignee exists and has access to project if provided
-    if (dto.assigneeId) {
+    if (dto.assigneeId && dto.projectId) {
       await this.verifyAssigneeAccess(dto.projectId, dto.assigneeId);
     }
 
@@ -186,6 +223,8 @@ export class TaskService {
     const task = await this.prisma.task.create({
       data: {
         ...dto,
+        projectId: dto.projectId,
+        status: dto.status ?? 'NOT_STARTED',
         dueDate: dto.dueDate ? new Date(dto.dueDate) : null,
         creatorId: userId,
       },
@@ -213,7 +252,11 @@ export class TaskService {
     }
 
     // Check if user has access to modify (creator or project admin)
-    await this.checkTaskModifyAccess(task.projectId, task.creatorId, userId);
+    if (task.projectId) {
+      await this.checkTaskModifyAccess(task.projectId, task.creatorId, userId);
+    } else if (task.creatorId !== userId) {
+      throw new ForbiddenException(taskMessages.task.error.accessDenied);
+    }
 
     // Verify category exists if being updated
     if (dto.categoryId) {
@@ -236,7 +279,7 @@ export class TaskService {
     }
 
     // Verify assignee exists and has access if being updated
-    if (dto.assigneeId) {
+    if (dto.assigneeId && task.projectId) {
       await this.verifyAssigneeAccess(task.projectId, dto.assigneeId);
     }
 
@@ -267,7 +310,11 @@ export class TaskService {
     }
 
     // Check if user has access to delete (creator or project admin)
-    await this.checkTaskModifyAccess(task.projectId, task.creatorId, userId);
+    if (task.projectId) {
+      await this.checkTaskModifyAccess(task.projectId, task.creatorId, userId);
+    } else if (task.creatorId !== userId) {
+      throw new ForbiddenException(taskMessages.task.error.accessDenied);
+    }
 
     // Delete task (cascade will handle markers)
     await this.prisma.task.delete({
@@ -293,7 +340,9 @@ export class TaskService {
     }
 
     // Check if user has access (any project member can update status)
-    await this.checkTaskAccess(task.projectId, userId);
+    if (task.projectId) {
+      await this.checkTaskAccess(task.projectId, userId);
+    }
 
     // Update status
     const updatedTask = await this.prisma.task.update({
@@ -323,10 +372,14 @@ export class TaskService {
     }
 
     // Check if user has access to modify
-    await this.checkTaskModifyAccess(task.projectId, task.creatorId, userId);
+    if (task.projectId) {
+      await this.checkTaskModifyAccess(task.projectId, task.creatorId, userId);
+    } else if (task.creatorId !== userId) {
+      throw new ForbiddenException(taskMessages.task.error.accessDenied);
+    }
 
     // Verify assignee exists and has access to project if provided
-    if (dto.assigneeId) {
+    if (dto.assigneeId && task.projectId) {
       await this.verifyAssigneeAccess(task.projectId, dto.assigneeId);
     }
 
@@ -358,7 +411,9 @@ export class TaskService {
     }
 
     // Check if user has access
-    await this.checkTaskAccess(task.projectId, userId);
+    if (task.projectId) {
+      await this.checkTaskAccess(task.projectId, userId);
+    }
 
     // Check if marker exists
     const marker = await this.prisma.marker.findUnique({
@@ -410,7 +465,9 @@ export class TaskService {
     }
 
     // Check if user has access
-    await this.checkTaskAccess(task.projectId, userId);
+    if (task.projectId) {
+      await this.checkTaskAccess(task.projectId, userId);
+    }
 
     // Check if marker is attached
     const taskMarker = await this.prisma.taskMarker.findUnique({

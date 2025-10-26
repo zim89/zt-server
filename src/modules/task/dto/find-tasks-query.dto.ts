@@ -10,7 +10,7 @@ import { PaginationQueryDto } from '@/shared/dto';
 export class FindTasksQueryDto extends PaginationQueryDto {
   @IsOptional()
   @IsString()
-  projectId?: string;
+  projectSlug?: string;
 
   @IsOptional()
   @IsEnum(TaskStatus)
@@ -22,7 +22,7 @@ export class FindTasksQueryDto extends PaginationQueryDto {
 
   @IsOptional()
   @IsString()
-  categoryId?: string;
+  categorySlug?: string;
 
   @IsOptional()
   @IsString()

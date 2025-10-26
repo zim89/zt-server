@@ -6,7 +6,6 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  IsUUID,
   MaxLength,
 } from 'class-validator';
 
@@ -28,9 +27,10 @@ export class CreateTaskDto {
   @MaxLength(500)
   description?: string;
 
-  @ApiProperty(taskSwaggerSchemas.status)
+  @ApiPropertyOptional(taskSwaggerSchemas.status)
+  @IsOptional()
   @IsEnum(TaskStatus)
-  status!: TaskStatus;
+  status?: TaskStatus;
 
   @ApiPropertyOptional(taskSwaggerSchemas.note)
   @IsOptional()
@@ -43,22 +43,23 @@ export class CreateTaskDto {
   @IsDateString()
   dueDate?: string;
 
-  @ApiProperty(taskSwaggerSchemas.projectId)
-  @IsUUID()
-  projectId!: string;
+  @ApiPropertyOptional(taskSwaggerSchemas.projectId)
+  @IsOptional()
+  @IsString()
+  projectId?: string;
 
   @ApiPropertyOptional(taskSwaggerSchemas.categoryId)
   @IsOptional()
-  @IsUUID()
+  @IsString()
   categoryId?: string;
 
   @ApiPropertyOptional(taskSwaggerSchemas.contactId)
   @IsOptional()
-  @IsUUID()
+  @IsString()
   contactId?: string;
 
   @ApiPropertyOptional(taskSwaggerSchemas.assigneeId)
   @IsOptional()
-  @IsUUID()
+  @IsString()
   assigneeId?: string;
 }

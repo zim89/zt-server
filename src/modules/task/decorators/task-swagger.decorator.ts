@@ -56,10 +56,10 @@ export const TaskSwaggerDocs = {
         example: 'desc',
       }),
       ApiQuery({
-        name: 'projectId',
+        name: 'projectSlug',
         required: false,
         type: String,
-        description: 'Filter by project',
+        description: 'Filter by project slug',
       }),
       ApiQuery({
         name: 'status',
@@ -83,10 +83,10 @@ export const TaskSwaggerDocs = {
         description: 'Filter by assignee',
       }),
       ApiQuery({
-        name: 'categoryId',
+        name: 'categorySlug',
         required: false,
         type: String,
-        description: 'Filter by category',
+        description: 'Filter by category slug',
       }),
       ApiQuery({
         name: 'contactId',

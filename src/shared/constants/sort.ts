@@ -27,6 +27,6 @@ export type SortField = (typeof sortFields)[keyof typeof sortFields];
 export const paginationDefaults = {
   page: 1,
   limit: 20,
-  maxLimit: 100,
+  maxLimit: 10000,
   minLimit: 1,
 } as const;

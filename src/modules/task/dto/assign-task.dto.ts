@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsUUID } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 import { taskSwaggerSchemas } from '../constants';
 
@@ -9,6 +9,6 @@ import { taskSwaggerSchemas } from '../constants';
 export class AssignTaskDto {
   @ApiPropertyOptional(taskSwaggerSchemas.assigneeId)
   @IsOptional()
-  @IsUUID()
+  @IsString()
   assigneeId?: string | null;
 }

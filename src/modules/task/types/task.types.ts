@@ -10,7 +10,7 @@ export interface TaskResponse {
   status: TaskStatus;
   note: string | null;
   dueDate: Date | null;
-  projectId: string;
+  projectId: string | null;
   categoryId: string | null;
   contactId: string | null;
   creatorId: string;

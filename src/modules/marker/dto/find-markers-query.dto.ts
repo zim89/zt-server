@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsBoolean, IsOptional, IsUUID } from 'class-validator';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 import { PaginationQueryDto } from '@/shared/dto';
 
@@ -23,7 +23,7 @@ export class FindMarkersQueryDto extends PaginationQueryDto {
     description: 'Filter by user ID (admin only)',
     example: 'clx1a2b3c4d5e6f7g8h9i0j1',
   })
-  @IsUUID()
+  @IsString()
   @IsOptional()
   userId?: string;
 }
