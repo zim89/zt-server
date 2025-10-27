@@ -4,7 +4,8 @@
  */
 
 /**
- * Basic task fields (without relations)
+ * Task fields with project and category relations
+ * This is now the default select for all task queries
  */
 export const taskSelectFields = {
   id: true,
@@ -13,20 +14,6 @@ export const taskSelectFields = {
   status: true,
   note: true,
   dueDate: true,
-  projectId: true,
-  categoryId: true,
-  contactId: true,
-  creatorId: true,
-  assigneeId: true,
-  createdAt: true,
-  updatedAt: true,
-} as const;
-
-/**
- * Task fields with all relations
- */
-export const taskSelectWithRelations = {
-  ...taskSelectFields,
   project: {
     select: {
       id: true,
@@ -41,6 +28,18 @@ export const taskSelectWithRelations = {
       slug: true,
     },
   },
+  contactId: true,
+  creatorId: true,
+  assigneeId: true,
+  createdAt: true,
+  updatedAt: true,
+} as const;
+
+/**
+ * Task fields with all relations
+ */
+export const taskSelectWithRelations = {
+  ...taskSelectFields,
   creator: {
     select: {
       id: true,

@@ -68,7 +68,7 @@ export class TaskService {
         throw new NotFoundException(taskMessages.task.error.projectNotFound);
       }
 
-      where.projectId = project.id;
+      where.project = { id: project.id };
     }
 
     // Apply filters
@@ -94,7 +94,7 @@ export class TaskService {
         throw new NotFoundException(taskMessages.task.error.categoryNotFound);
       }
 
-      where.categoryId = category.id;
+      where.category = { id: category.id };
     }
 
     if (query.contactId) {
@@ -168,8 +168,8 @@ export class TaskService {
     }
 
     // Check access through project
-    if (task.projectId) {
-      await this.checkTaskAccess(task.projectId, userId);
+    if (task.project?.id) {
+      await this.checkTaskAccess(task.project.id, userId);
     }
 
     return task;

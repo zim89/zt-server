@@ -10,8 +10,16 @@ export interface TaskResponse {
   status: TaskStatus;
   note: string | null;
   dueDate: Date | null;
-  projectId: string | null;
-  categoryId: string | null;
+  project: {
+    id: string;
+    name: string;
+    slug: string;
+  } | null;
+  category: {
+    id: string;
+    name: string;
+    slug: string;
+  } | null;
   contactId: string | null;
   creatorId: string;
   assigneeId: string | null;
@@ -23,16 +31,6 @@ export interface TaskResponse {
  * Task with related entities
  */
 export interface TaskWithRelations extends TaskResponse {
-  project?: {
-    id: string;
-    name: string;
-    slug: string;
-  };
-  category?: {
-    id: string;
-    name: string;
-    slug: string;
-  } | null;
   creator?: {
     id: string;
     email: string;
